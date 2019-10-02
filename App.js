@@ -1,15 +1,14 @@
 import React from 'react'
 import { Platform } from 'react-native'
 import { createStore, StoreProvider } from 'easy-peasy'
-import { composeWithDevTools } from 'remote-redux-devtools'
 import { persistStore, persistReducer } from 'redux-persist'
 import { PersistGate } from 'redux-persist/integration/react'
 import AsnycStorage from '@react-native-community/async-storage'
+import logger from 'redux-logger'
 import Root from './src/routes'
 import Models from './src/models'
 
 const store = createStore(Models, {
-  compose: composeWithDevTools({ realtime: true, trace: true, port: 5678, hostname: 'localhost', name: Platform.OS }),
   reducerEnhancer: reducer =>
     persistReducer(
       {
@@ -19,7 +18,8 @@ const store = createStore(Models, {
       },
       reducer
       // whitelist:["preferences"]
-    )
+    ),
+  middleware: [logger]
 })
 const persistor = persistStore(store)
 export default () => (
